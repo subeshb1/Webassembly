@@ -8,6 +8,8 @@ require (
 	github.com/mattn/go-isatty v0.0.4
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/pmezard/go-difflib v1.0.0
+	github.com/shurcooL/go v0.0.0-20200502201357-93f07166e636 // indirect
+	github.com/shurcooL/go-goon v0.0.0-20170922171312-37c2f522c041 // indirect
 	github.com/stretchr/testify v1.2.2
 	github.com/wayneashleyberry/terminal-dimensions v1.0.0
 	golang.org/x/sys v0.0.0-20181019160139-8e24a49d80f8

@@ -1,24 +1,56 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/BrowserFS/2.0.0/browserfs.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/drudru/ansi_up/ansi_up.js"></script>
+    
     <script src="wasm_exec.js"></script>
     <script>
-      const go = new Go();
-      async function fetchAndInstantiate() {
-        const fetchResult = await fetch("main.wasm");
-        const bytes = await fetchResult.arrayBuffer();
-        const resultObj = await WebAssembly.instantiate(bytes, go.importObject);
-        // The functions reside in the exports section on the resultObject.instance
-        return resultObj.instance;
-      }
+      BrowserFS.configure(
+        {
+          fs: "InMemory",
+        },
+        function (e) {
+          if (e) {
+            // An error happened!
+            throw e;
+          }
+          // Otherwise, BrowserFS is ready-to-use!
+          var fs = BrowserFS.BFSRequire("fs");
+          var Buffer = BrowserFS.BFSRequire("buffer").Buffer;
 
-      WebAssembly.instantiateStreaming(
-        fetch("main.wasm"),
-        go.importObject
-      ).then((result) => {
-        go.run(result.instance);
-      });
+          // Write the test pdf file to the InMemory FS
+          fetch(
+            "/Loreal-Paris-BMAG-Article-7-clear-skin-tips-for-your-best-complexion-yet-D.jpg"
+          )
+            .then(function (res) {
+              return res.arrayBuffer();
+            })
+            .then(function (buffer) {
+              fs.writeFile("/test.jpg", Buffer.from(buffer), function (err) {
+                // check it is there
+                fs.readFile("/test.jpg", function (err, contents) {
+                  console.log(contents);
+                  done();
+                });
+              });
+            });
+
+          function done() {
+            const go = new Go();
+            go.argv = ["imageAscii.wasm", "-c", "-f", "/test.jpg", "-c=true"];
+            WebAssembly.instantiateStreaming(
+              fetch("imageAscii.wasm"),
+              go.importObject
+            ).then((result) => {
+              go.run(result.instance);
+            });
+          }
+        }
+      );
     </script>
   </head>
-  <body></body>
+  <body>
+    <pre id="console"></pre>
+  </body>
 </html>
