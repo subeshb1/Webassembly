@@ -4,14 +4,6 @@
     <script src="wasm_exec.js"></script>
     <script>
       const go = new Go();
-      async function fetchAndInstantiate() {
-        const fetchResult = await fetch("main.wasm");
-        const bytes = await fetchResult.arrayBuffer();
-        const resultObj = await WebAssembly.instantiate(bytes, go.importObject);
-        // The functions reside in the exports section on the resultObject.instance
-        return resultObj.instance;
-      }
-
       WebAssembly.instantiateStreaming(
         fetch("main.wasm"),
         go.importObject
